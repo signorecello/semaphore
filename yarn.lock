@@ -411,6 +411,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aztec/bb.js@npm:0.26.3":
+  version: 0.26.3
+  resolution: "@aztec/bb.js@npm:0.26.3"
+  dependencies:
+    comlink: "npm:^4.4.1"
+    commander: "npm:^10.0.1"
+    debug: "npm:^4.3.4"
+    tslib: "npm:^2.4.0"
+  bin:
+    bb.js: dest/node/main.js
+  checksum: 10/45e4fdfa3c958c0a50212b38eb46f5b0ee1ef8f465b4cac748d98663f80709eebe6a5d0acc8edfacf0be6ccbdff2d3dfdfc814c7042c19f54653bc896ccdf1c5
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/code-frame@npm:7.18.6"
@@ -7145,6 +7159,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noir-lang/acvm_js@npm:0.40.0-f988d02.nightly":
+  version: 0.40.0-f988d02.nightly
+  resolution: "@noir-lang/acvm_js@npm:0.40.0-f988d02.nightly"
+  checksum: 10/b42992440c9aaf637977b6f0b7216740480715bfb1f8ac52e55328c958d36f2836aebc5c90e7f289f2e806f58ec4ea29a86dc010f79a4493f6b8f61f4aa289f8
+  languageName: node
+  linkType: hard
+
+"@noir-lang/backend_barretenberg@npm:0.24.0-f988d02.nightly, @noir-lang/backend_barretenberg@npm:nightly":
+  version: 0.24.0-f988d02.nightly
+  resolution: "@noir-lang/backend_barretenberg@npm:0.24.0-f988d02.nightly"
+  dependencies:
+    "@aztec/bb.js": "npm:0.26.3"
+    "@noir-lang/types": "npm:0.24.0-f988d02.nightly"
+    fflate: "npm:^0.8.0"
+  checksum: 10/399b7ab38461caa27fa49c247b01ed0f73825293cc031490776332a5c506222311bc04bac2ebcfb832c0f2d22620ca03bf1f2f797106c29d3c4c5169dc8a3654
+  languageName: node
+  linkType: hard
+
+"@noir-lang/noir_js@npm:0.24.0-f988d02.nightly, @noir-lang/noir_js@npm:nightly":
+  version: 0.24.0-f988d02.nightly
+  resolution: "@noir-lang/noir_js@npm:0.24.0-f988d02.nightly"
+  dependencies:
+    "@noir-lang/acvm_js": "npm:0.40.0-f988d02.nightly"
+    "@noir-lang/noirc_abi": "npm:0.24.0-f988d02.nightly"
+    "@noir-lang/types": "npm:0.24.0-f988d02.nightly"
+  checksum: 10/f083c53b0e037d1195ee25a42d96473513348845ef115abdcf224dfb00fdd13b60664a48e88d1402b6e5021514e66d25b32d4b7afe58da0a75e76174e7e4cece
+  languageName: node
+  linkType: hard
+
+"@noir-lang/noir_wasm@npm:nightly":
+  version: 0.24.0-f988d02.nightly
+  resolution: "@noir-lang/noir_wasm@npm:0.24.0-f988d02.nightly"
+  dependencies:
+    "@noir-lang/types": "npm:0.24.0-f988d02.nightly"
+    pako: "npm:^2.1.0"
+  checksum: 10/2b2b1e3688e670488d9a71475d456abb236adb8090231a686f7371e16b2ee238a2208e8c06f74921524aa7104fe6e79e5a792eb6b40049632a5c0032722350c0
+  languageName: node
+  linkType: hard
+
+"@noir-lang/noirc_abi@npm:0.24.0-f988d02.nightly":
+  version: 0.24.0-f988d02.nightly
+  resolution: "@noir-lang/noirc_abi@npm:0.24.0-f988d02.nightly"
+  dependencies:
+    "@noir-lang/types": "npm:0.24.0-f988d02.nightly"
+  checksum: 10/59ebe7e1e376b6ee8d6ee276c119d92ae7fc9e3a4d8d9111803e112fa241f8b15eddcf5b94ae71c24ceac0a2f759db0a686534eb6a0c263b08f6b2889fb0d91b
+  languageName: node
+  linkType: hard
+
+"@noir-lang/types@npm:0.24.0-f988d02.nightly":
+  version: 0.24.0-f988d02.nightly
+  resolution: "@noir-lang/types@npm:0.24.0-f988d02.nightly"
+  checksum: 10/c61e2087266b4acbbe2a0f170b7988a2751a71a1e58a94c2ab7d644a8cf70ec1208fdd8eb3eae8c2ee99e9719cf680b6e6502486977597c0d8d47a3fbe17ac9c
+  languageName: node
+  linkType: hard
+
 "@nomicfoundation/ethereumjs-block@npm:5.0.2":
   version: 5.0.2
   resolution: "@nomicfoundation/ethereumjs-block@npm:5.0.2"
@@ -8706,13 +8775,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@semaphore-protocol/proof@npm:4.0.0-beta.2, @semaphore-protocol/proof@workspace:packages/proof":
+"@semaphore-protocol/proof@npm:4.0.0-beta.2":
+  version: 4.0.0-beta.2
+  resolution: "@semaphore-protocol/proof@npm:4.0.0-beta.2"
+  dependencies:
+    "@semaphore-protocol/utils": "npm:4.0.0-beta.2"
+    "@zk-kit/utils": "npm:0.3.0"
+    ethers: "npm:6.10.0"
+    snarkjs: "npm:0.7.3"
+  peerDependencies:
+    "@semaphore-protocol/group": 4.0.0-beta.2
+    "@semaphore-protocol/identity": 4.0.0-beta.2
+  checksum: 10/ca8665c66c7ffd0428432d0dc7021d76a0da0ab84c2a71b3892836b6619cd3e7e47bacb6dd98cb80d76b25b9b7c53f51501a88374db99c2a30188bf4bd705897
+  languageName: node
+  linkType: hard
+
+"@semaphore-protocol/proof@workspace:packages/proof":
   version: 0.0.0-use.local
   resolution: "@semaphore-protocol/proof@workspace:packages/proof"
   dependencies:
+    "@noir-lang/backend_barretenberg": "npm:0.24.0-f988d02.nightly"
+    "@noir-lang/noir_js": "npm:0.24.0-f988d02.nightly"
     "@rollup/plugin-alias": "npm:^5.1.0"
     "@rollup/plugin-json": "npm:^6.1.0"
-    "@semaphore-protocol/utils": "npm:4.0.0-beta.2"
     "@types/download": "npm:^8.0.5"
     "@types/snarkjs": "npm:0.7.8"
     "@types/tmp": "npm:^0.2.6"
@@ -8725,8 +8810,8 @@ __metadata:
     rollup-plugin-typescript2: "npm:^0.36.0"
     snarkjs: "npm:0.7.3"
   peerDependencies:
-    "@semaphore-protocol/group": 4.0.0-beta.2
-    "@semaphore-protocol/identity": 4.0.0-beta.2
+    "@semaphore-protocol/group": 4.0.0-beta.1
+    "@semaphore-protocol/identity": 4.0.0-beta.1
   languageName: unknown
   linkType: soft
 
@@ -14271,6 +14356,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"comlink@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "comlink@npm:4.4.1"
+  checksum: 10/3d953e987874bf0d60c02a3dd96e9f661141e58709eaab82097369c585382935651ce61f004e7bb1a5eb868ca8d8734d1cec885965ae53c56567d91b9539f2d0
+  languageName: node
+  linkType: hard
+
 "comma-separated-tokens@npm:^1.0.0":
   version: 1.0.8
   resolution: "comma-separated-tokens@npm:1.0.8"
@@ -14327,6 +14419,13 @@ __metadata:
   version: 10.0.0
   resolution: "commander@npm:10.0.0"
   checksum: 10/a4fc6d79b44fd87f6c5fbbdfc8d10fa8b33e1676ae170356419b9e06faf802899fae03a3b151c2e6a18047885ca42d2b70e0a94d4e5042edb948100848d43f91
+  languageName: node
+  linkType: hard
+
+"commander@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "commander@npm:10.0.1"
+  checksum: 10/8799faa84a30da985802e661cc9856adfaee324d4b138413013ef7f087e8d7924b144c30a1f1405475f0909f467665cd9e1ce13270a2f41b141dab0b7a58f3fb
   languageName: node
   linkType: hard
 
@@ -17944,6 +18043,13 @@ __metadata:
     wasmcurves: "npm:0.2.2"
     web-worker: "npm:1.2.0"
   checksum: 10/2886a8737eb200dcb3f592a168d525bbde270e362589b5cb7dfa1cc86b78a3c455858664be994dae5c7acbf7eb831250afdf4270fc900d90b02ac6023a74c302
+  languageName: node
+  linkType: hard
+
+"fflate@npm:^0.8.0":
+  version: 0.8.2
+  resolution: "fflate@npm:0.8.2"
+  checksum: 10/2bd26ba6d235d428de793c6a0cd1aaa96a06269ebd4e21b46c8fd1bd136abc631acf27e188d47c3936db090bf3e1ede11d15ce9eae9bffdc4bfe1b9dc66ca9cb
   languageName: node
   linkType: hard
 
@@ -26152,6 +26258,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pako@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 10/38a04991d0ec4f4b92794a68b8c92bf7340692c5d980255c92148da96eb3e550df7a86a7128b5ac0c65ecddfe5ef3bbe9c6dab13e1bc315086e759b18f7c1401
+  languageName: node
+  linkType: hard
+
 "param-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "param-case@npm:3.0.4"
@@ -29282,6 +29395,9 @@ __metadata:
   dependencies:
     "@commitlint/cli": "npm:^16.0.2"
     "@commitlint/config-conventional": "npm:^16.0.0"
+    "@noir-lang/backend_barretenberg": "npm:nightly"
+    "@noir-lang/noir_js": "npm:nightly"
+    "@noir-lang/noir_wasm": "npm:nightly"
     "@rollup/plugin-typescript": "npm:^11.1.6"
     "@types/circomlibjs": "npm:^0.1.4"
     "@types/download": "npm:^8.0.1"
