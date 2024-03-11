@@ -42,17 +42,10 @@ export default class Identity {
     private constructor(bb: BarretenbergHelpers, privateKey: BigNumberish) {
         this._privateKey = privateKey
         this._secretScalar = deriveSecretScalar(privateKey)
-        console.log("secretScalar", BigInt(this._secretScalar).toString(16))
         this._publicKey = derivePublicKey(privateKey)
         this._bb = bb
-        const publicKey = this._publicKey
-            .toString()
-            .split(",")
-            .map((i) => BigInt(i))
-        console.log("publickey", publicKey)
-        console.log(typeof publicKey[0])
+        const publicKey = this._publicKey.map((i) => BigInt(i).toString(16))
         this._commitment = this._bb.poseidon(publicKey).toString()
-        console.log("commitment", BigInt(this._commitment).toString(16))
     }
 
     static async new(privateKey: BigNumberish = randomNumber().toString()) {

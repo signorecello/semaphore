@@ -2,7 +2,7 @@
 # just as semaphore does before inputting the data into the circuit
 secret = "0xd2e9ac9ee0ca9631915000e56e05d84201e3f405da337fb91efca803d81afaf"
 hash_path = [
-  '0xb63a53787021a4a962a452c2921b3663aff1ffd8d5510540f8e659e782956f1',
+  '0x24d310f66b0ba122e5da95ee52038a0efe0a77939cecb09a2c0977a16195535',
   '0x0',
   '0x0',
   '0x0',
@@ -13,9 +13,9 @@ hash_path = [
   '0x0',
   '0x0'
 ]
-indices = "0x200"
-nullifier = "0xc00512fe685732318fc0212b1e71cb8073fc5db79ba635edc2cf78b287683a1"
-root = "0x2515d37361a8ad85979c4cd7f616d2854e5bd97af86cdf5cf5cb42e205a35c94"
+indices = 512
+nullifier = "0x26459fc242a3c38a5647afbe5d7295d3b9ecc43f4901a4b61d11ca245d857514"
+root = "0x2e494f6b5c8d3107e358d7f4c7c4b43ce6bfa6709ed85a038084d9f54354407b"
 # siblings= [
 #     '0x290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e5',
 #     '0x38682aa1cb5ae4e0a3f13da432a95c77c5c111f6f030faf9cad641ce1ed7383',

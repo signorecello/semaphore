@@ -23,14 +23,7 @@ export default class Group {
      * @param members A list of identity commitments.
      */
     private constructor(bb: BarretenbergHelpers, members: BigNumberish[] = []) {
-        console.log("group hash tests")
-        console.log(
-            bb.poseidon([
-                BigInt("0x0b63a53787021a4a962a452c2921b3663aff1ffd8d5510540f8e659e782956f1"),
-                BigInt("0x174db9313255aa8fc098f89a10e757ba664296d2a2f4b7d1e81c040d3a8b953a")
-            ])
-        )
-        const hasher = (a: bigint, b: bigint) => bb.poseidon([a, b])
+        const hasher = (a: bigint, b: bigint) => bb.poseidon([a.toString(16), b.toString(16)])
         this.leanIMT = new LeanIMT(hasher, members.map(BigInt))
     }
 

@@ -1,5 +1,10 @@
 import { BarretenbergSync, Fr } from "@aztec/bb.js"
 
+function toEvenHex(str: string) {
+    const trimmed = str.replace("0x", "")
+    return trimmed.length % 2 === 0 ? `0x${trimmed}` : `0x0${trimmed}`
+}
+
 export class BarretenbergHelpers {
     constructor(private bb: BarretenbergSync) {}
 
@@ -8,9 +13,8 @@ export class BarretenbergHelpers {
         return new BarretenbergHelpers(bb)
     }
 
-    poseidon(inputs: bigint[]) {
-        const serialized = inputs.map((i) => Fr.fromString(`0x${i.toString(16)}`))
-        console.log("serialized", serialized.toString())
-        return BigInt(this.bb.poseidonHash(serialized).toString())
+    poseidon(inputs: string[]) {
+        const inputsFr = inputs.map((i) => Fr.fromString(toEvenHex(i)))
+        return BigInt(this.bb.poseidonHash(inputsFr).toString())
     }
 }
