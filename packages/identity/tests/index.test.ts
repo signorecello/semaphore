@@ -6,8 +6,8 @@ describe("Identity", () => {
     const privateKey = "secret"
 
     describe("# Identity", () => {
-        it("Should create a random identity", () => {
-            const identity = new Identity()
+        it("Should create a random identity", async () => {
+            const identity = await Identity.new()
 
             expect(typeof identity.privateKey).toBe("string")
             expect(typeof identity.secretScalar).toBe("string")
@@ -15,8 +15,8 @@ describe("Identity", () => {
             expect(typeof identity.commitment).toBe("string")
         })
 
-        it("Should create deterministic identities from a secret (private key)", () => {
-            const identity = new Identity(privateKey)
+        it("Should create deterministic identities from a secret (private key)", async () => {
+            const identity = await Identity.new(privateKey)
 
             expect(typeof identity.privateKey).toBe("string")
             expect(typeof identity.secretScalar).toBe("string")
@@ -26,8 +26,8 @@ describe("Identity", () => {
     })
 
     describe("# signMessage", () => {
-        it("Should sign a message", () => {
-            const identity = new Identity(privateKey)
+        it("Should sign a message", async () => {
+            const identity = await Identity.new(privateKey)
 
             const signature = identity.signMessage("message")
 
@@ -38,8 +38,8 @@ describe("Identity", () => {
     })
 
     describe("# verifySignature", () => {
-        it("Should verify a signature", () => {
-            const identity = new Identity(privateKey)
+        it("Should verify a signature", async () => {
+            const identity = await Identity.new(privateKey)
 
             const signature = identity.signMessage("message")
 

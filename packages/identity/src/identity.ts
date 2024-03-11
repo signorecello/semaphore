@@ -1,7 +1,7 @@
 import type { Point } from "@zk-kit/baby-jubjub"
 import { Signature, derivePublicKey, deriveSecretScalar, signMessage, verifySignature } from "@zk-kit/eddsa-poseidon"
 import type { BigNumberish } from "@zk-kit/utils"
-import { poseidon2 } from "poseidon-lite/poseidon2"
+import { BarretenbergHelpers } from "@semaphore-protocol/utils/bb"
 import { randomNumber } from "./random-number.node"
 
 /**
@@ -22,6 +22,7 @@ export default class Identity {
     private _publicKey: Point<string>
     // The identity commitment used as a public value in Semaphore groups.
     private _commitment: string
+    private _bb: BarretenbergHelpers
 
     /**
      * Initializes the class attributes based on a given private key.
@@ -38,11 +39,25 @@ export default class Identity {
      *
      * @param privateKey The private key used to derive the public key.
      */
-    constructor(privateKey: BigNumberish = randomNumber().toString()) {
+    private constructor(bb: BarretenbergHelpers, privateKey: BigNumberish) {
         this._privateKey = privateKey
         this._secretScalar = deriveSecretScalar(privateKey)
+        console.log("secretScalar", BigInt(this._secretScalar).toString(16))
         this._publicKey = derivePublicKey(privateKey)
-        this._commitment = poseidon2(this._publicKey).toString()
+        this._bb = bb
+        const publicKey = this._publicKey
+            .toString()
+            .split(",")
+            .map((i) => BigInt(i))
+        console.log("publickey", publicKey)
+        console.log(typeof publicKey[0])
+        this._commitment = this._bb.poseidon(publicKey).toString()
+        console.log("commitment", BigInt(this._commitment).toString(16))
+    }
+
+    static async new(privateKey: BigNumberish = randomNumber().toString()) {
+        const bb = await BarretenbergHelpers.new()
+        return new Identity(bb, privateKey)
     }
 
     /**

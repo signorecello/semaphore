@@ -1,5 +1,5 @@
 import { LeanIMT } from "@zk-kit/imt"
-import { poseidon2 } from "poseidon-lite/poseidon2"
+import { BarretenbergHelpers } from "@semaphore-protocol/utils/bb"
 import { BigNumberish, MerkleProof } from "./types"
 
 /**
@@ -22,8 +22,22 @@ export default class Group {
      * them one by one with the `addMember` function.
      * @param members A list of identity commitments.
      */
-    constructor(members: BigNumberish[] = []) {
-        this.leanIMT = new LeanIMT((a, b) => poseidon2([a, b]), members.map(BigInt))
+    private constructor(bb: BarretenbergHelpers, members: BigNumberish[] = []) {
+        console.log("group hash tests")
+        console.log(
+            bb.poseidon([
+                BigInt("0x0b63a53787021a4a962a452c2921b3663aff1ffd8d5510540f8e659e782956f1"),
+                BigInt("0x174db9313255aa8fc098f89a10e757ba664296d2a2f4b7d1e81c040d3a8b953a")
+            ])
+        )
+        const hasher = (a: bigint, b: bigint) => bb.poseidon([a, b])
+        this.leanIMT = new LeanIMT(hasher, members.map(BigInt))
+    }
+
+    static async new(members: BigNumberish[] = []) {
+        const bb = await BarretenbergHelpers.new()
+        const group = new Group(bb, members)
+        return group
     }
 
     /**
@@ -133,8 +147,8 @@ export default class Group {
      * @param nodes The stringified JSON of the group.
      * @returns The {@link Group} instance.
      */
-    static import(exportedGroup: string): Group {
-        const group = new Group()
+    static async import(exportedGroup: string): Promise<Group> {
+        const group = await Group.new()
 
         group.leanIMT.import(exportedGroup)
 

@@ -21,6 +21,16 @@
             "types": "./dist/types/types.d.ts",
             "require": "./dist/lib.commonjs/types.cjs",
             "default": "./dist/lib.esm/types.js"
+        },
+        "./noir": {
+            "types": "./dist/types/noir.d.ts",
+            "require": "./dist/lib.commonjs/noir.cjs",
+            "default": "./dist/lib.esm/noir.js"
+        },
+        "./bb": {
+            "types": "./dist/types/bb.d.ts",
+            "require": "./dist/lib.commonjs/bb.cjs",
+            "default": "./dist/lib.esm/bb.js"
         }
     },
     "files": [
@@ -46,5 +56,10 @@
         "rollup": "^4.9.6",
         "rollup-plugin-cleanup": "^3.2.1",
         "rollup-plugin-typescript2": "^0.36.0"
+    },
+    "dependencies": {
+        "@aztec/bb.js": "^0.26.6",
+        "@noir-lang/backend_barretenberg": "0.24.0-f988d02.nightly",
+        "@noir-lang/noir_js": "0.24.0-f988d02.nightly"
     }
 }

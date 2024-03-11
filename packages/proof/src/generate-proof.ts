@@ -1,10 +1,8 @@
 import type { Group, MerkleProof } from "@semaphore-protocol/group"
 import type { Identity } from "@semaphore-protocol/identity"
 import { requireDefined, requireNumber, requireObject } from "@semaphore-protocol/utils/errors"
-import { Noir } from "@noir-lang/noir_js"
-import { BarretenbergBackend } from "@noir-lang/backend_barretenberg"
-import { poseidon1 } from "poseidon-lite/poseidon1"
-import getSnarkArtifacts from "./get-snark-artifacts.node"
+import { NoirSemaphore } from "@semaphore-protocol/utils/noir"
+import { BarretenbergHelpers } from "@semaphore-protocol/utils/bb"
 
 /**
  * It generates a Semaphore proof, i.e. a zero-knowledge proof that an identity that
@@ -53,11 +51,15 @@ export default async function generateProof(
     if ("siblings" in groupOrMerkleProof) {
         merkleProof = groupOrMerkleProof
     } else {
+        console.log("group members", groupOrMerkleProof.members)
+        console.log("identity.commitment", BigInt(identity.commitment).toString(16))
         const leafIndex = groupOrMerkleProof.indexOf(identity.commitment)
+        console.log("leafIndex", leafIndex)
         merkleProof = groupOrMerkleProof.generateMerkleProof(leafIndex)
+        console.log("index", merkleProof.index)
     }
 
-    const secret = `0x${BigInt(identity.secretScalar).toString(16)}`
+    const secret = BigInt(identity.secretScalar)
     const root = `0x${BigInt(merkleProof.root).toString(16)}`
 
     const indices = []
@@ -70,22 +72,22 @@ export default async function generateProof(
             hashPath[i] = "0"
         }
     }
+    console.log(indices)
 
-    const compiled = await getSnarkArtifacts(merkleTreeDepth)
-
-    const backend = new BarretenbergBackend(compiled, { threads: 8 })
-    const noir = new Noir(compiled, backend)
+    const bb = await BarretenbergHelpers.new()
+    const noirSemaphore = await NoirSemaphore.new(merkleTreeDepth, { threads: 8 })
 
     const input = {
-        secret,
+        secret: `0x${secret.toString(16)}`,
         hash_path: hashPath.map((x) => `0x${BigInt(x).toString(16)}`),
         indices: BigInt(`0b${indices.join("")}`).toString(10),
-        nullifier: `0x${poseidon1([secret]).toString(16)}`,
+        nullifier: `0x${bb.poseidon([secret]).toString(16)}`,
         root
     }
+
     console.log(input)
 
-    const proof = await noir.generateProof(input)
+    const proof = await noirSemaphore.prove(input)
 
     return {
         proof
