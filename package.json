@@ -12,7 +12,7 @@
         "build:subgraph": "yarn workspace semaphore-subgraph codegen sepolia && yarn workspace semaphore-subgraph build",
         "compile:contracts": "yarn workspace semaphore-contracts compile",
         "test": "yarn test:libraries && yarn test:contracts && yarn test:circuits && yarn test:subgraph",
-        "test:libraries": "jest --coverage",
+        "test:libraries": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
         "test:library": "NODE_OPTIONS=--experimental-vm-modules jest packages/${0}",
         "test:subgraph": "yarn workspace semaphore-subgraph test",
         "test:contracts": "yarn workspace semaphore-contracts test:coverage",

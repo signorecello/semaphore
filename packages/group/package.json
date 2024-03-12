@@ -29,6 +29,9 @@
     "publishConfig": {
         "access": "public"
     },
+    "peerDependencies": {
+        "@semaphore-protocol/circuits": "4.0.0-beta.1"
+    },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-node-resolve": "^15.2.3",

@@ -1,8 +1,7 @@
 import type { Group, MerkleProof } from "@semaphore-protocol/group"
 import type { Identity } from "@semaphore-protocol/identity"
 import { requireDefined, requireNumber, requireObject } from "@semaphore-protocol/utils/errors"
-import { NoirSemaphore } from "@semaphore-protocol/utils/noir"
-import { BarretenbergHelpers } from "@semaphore-protocol/utils/bb"
+import { NoirSemaphore } from "@semaphore-protocol/circuits"
 
 /**
  * It generates a Semaphore proof, i.e. a zero-knowledge proof that an identity that
@@ -55,34 +54,36 @@ export default async function generateProof(
         merkleProof = groupOrMerkleProof.generateMerkleProof(leafIndex)
     }
 
+    const noirSemaphore = await NoirSemaphore.new(merkleTreeDepth, { threads: 8 })
     const secret = `0x${BigInt(identity.secretScalar).toString(16)}`
+    const nullifier = `0x${noirSemaphore.poseidon([secret]).toString(16)}`
     const root = `0x${BigInt(merkleProof.root).toString(16)}`
 
-    const indices = []
+    let indices: string = "0b"
     const hashPath = merkleProof.siblings
-
     for (let i = 0; i < merkleTreeDepth; i += 1) {
-        indices.push((merkleProof.index >> i) & 1)
+        indices = indices.concat(((merkleProof.index >> i) & 1).toString())
 
         if (hashPath[i] === undefined) {
             hashPath[i] = "0"
         }
     }
 
-    const bb = await BarretenbergHelpers.new()
-    const noirSemaphore = await NoirSemaphore.new(merkleTreeDepth, { threads: 8 })
-
     const input = {
         secret,
         hash_path: hashPath.map((x) => `0x${BigInt(x).toString(16)}`),
-        indices: BigInt(`0b${indices.join("")}`).toString(10),
-        nullifier: `0x${bb.poseidon([secret]).toString(16)}`,
+        indices: `0x${BigInt(indices).toString(16)}`,
+        nullifier,
         root
     }
 
     const proof = await noirSemaphore.prove(input)
+    await noirSemaphore.destroy()
 
     return {
-        proof
+        proof,
+        nullifier,
+        root,
+        depth: merkleTreeDepth
     }
 }

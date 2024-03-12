@@ -10,6 +10,9 @@ export type SnarkArtifacts = {
 
 export type SemaphoreProof = {
     proof: ProofData
+    nullifier: string
+    root: string
+    depth: number
 }
 
 export type PackedPoints = [

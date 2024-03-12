@@ -103,19 +103,19 @@ describe("Group", () => {
         })
     })
 
-    // describe("# import", () => {
-    //     it("Should import a group", async () => {
-    //         const group1 = await Group.new([1, 2, 3])
-    //         const exportedGroup = group1.export()
+    describe("# import", () => {
+        it("Should import a group", async () => {
+            const group1 = await Group.new([1, 2, 3])
+            const exportedGroup = group1.export()
 
-    //         const group2 = await Group.import(exportedGroup)
+            const group2 = await Group.import(exportedGroup)
 
-    //         group1.addMember(4)
-    //         group2.addMember(4)
+            group1.addMember(4)
+            group2.addMember(4)
 
-    //         expect(group2.depth).toBe(group1.depth)
-    //         expect(group2.size).toBe(group1.size)
-    //         expect(group2.root).toBe(group1.root)
-    //     })
-    // })
+            expect(group2.depth).toBe(group1.depth)
+            expect(group2.size).toBe(group1.size)
+            expect(group2.root).toBe(group1.root)
+        })
+    })
 })

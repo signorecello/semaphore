@@ -1,5 +1,5 @@
 import { LeanIMT } from "@zk-kit/imt"
-import { BarretenbergHelpers } from "@semaphore-protocol/utils/bb"
+import { NoirSemaphore } from "@semaphore-protocol/circuits"
 import { BigNumberish, MerkleProof } from "./types"
 
 /**
@@ -22,13 +22,13 @@ export default class Group {
      * them one by one with the `addMember` function.
      * @param members A list of identity commitments.
      */
-    private constructor(bb: BarretenbergHelpers, members: BigNumberish[] = []) {
-        const hasher = (a: bigint, b: bigint) => bb.poseidon([a.toString(16), b.toString(16)])
+    private constructor(bb: NoirSemaphore, members: BigNumberish[] = []) {
+        const hasher = (a: bigint, b: bigint) => bb.poseidon([BigInt(a).toString(16), BigInt(b).toString(16)])
         this.leanIMT = new LeanIMT(hasher, members.map(BigInt))
     }
 
     static async new(members: BigNumberish[] = []) {
-        const bb = await BarretenbergHelpers.new()
+        const bb = await NoirSemaphore.new()
         const group = new Group(bb, members)
         return group
     }

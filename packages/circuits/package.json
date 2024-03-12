@@ -1,12 +1,19 @@
 {
     "name": "@semaphore-protocol/circuits",
     "version": "4.0.0-beta.2",
-    "description": "Semaphore Circom circuits to generate zero-knowledge proofs.",
+    "description": "Semaphore Noir circuits to generate zero-knowledge proofs.",
+    "type": "module",
     "license": "MIT",
+    "main": "dist/index.js",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+        "types": "./dist/types/index.d.ts",
+        "require": "./dist/index.cjs",
+        "default": "./dist/index.js"
+    },
     "files": [
-        "**/*.circom",
-        "!main",
-        "!test",
+        "dist/",
+        "src/",
         "LICENSE",
         "README.md"
     ],
@@ -16,23 +23,20 @@
         "url": "https://github.com/semaphore-protocol/semaphore.git/issues"
     },
     "scripts": {
-        "compile": "circomkit compile semaphore",
-        "setup": "circomkit setup semaphore",
-        "test": "mocha"
+        "build": "rimraf dist && rollup -c rollup.config.ts --configPlugin typescript",
+        "compile": "sh generate_circuits.sh"
     },
     "publishConfig": {
         "access": "public"
     },
-    "dependencies": {
-        "@zk-kit/circuits": "0.2.4",
-        "circomlib": "2.0.5"
-    },
     "devDependencies": {
-        "@types/mocha": "^10.0.6",
-        "@zk-kit/eddsa-poseidon": "0.6.0",
-        "@zk-kit/imt": "^2.0.0-beta.2",
-        "circomkit": "^0.0.19",
-        "mocha": "^10.2.0",
-        "poseidon-lite": "^0.2.0"
+        "@aztec/bb.js": "^0.26.6",
+        "@noir-lang/backend_barretenberg": "0.24.0-f988d02.nightly",
+        "@noir-lang/noir_js": "0.24.0-f988d02.nightly",
+        "rimraf": "^5.0.5",
+        "rollup": "^4.9.6",
+        "rollup-plugin-cleanup": "^3.2.1",
+        "rollup-plugin-typescript2": "^0.36.0",
+        "toml": "^3.0.0"
     }
 }

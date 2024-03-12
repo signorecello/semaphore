@@ -1,6 +1,5 @@
 import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
-import { getCurveFromName } from "ffjavascript"
 import { SemaphoreProof, generateProof, verifyProof } from "../src"
 
 describe("Proof", () => {
@@ -8,15 +7,9 @@ describe("Proof", () => {
 
     let identity: Identity | null = null
     let proof: SemaphoreProof
-    let curve: any
 
     beforeAll(async () => {
         identity = await Identity.new(42)
-        curve = await getCurveFromName("bn128")
-    })
-
-    afterAll(async () => {
-        await curve.terminate()
     })
 
     describe("# generateProof", () => {
@@ -53,17 +46,17 @@ describe("Proof", () => {
         }, 50000)
     })
 
-    // describe("# verifyProof", () => {
-    //     it("Should not verify a Semaphore proof if the tree depth is not supported", async () => {
-    //         const fun = () => verifyProof({ ...proof, merkleTreeDepth: 40 })
+    describe("# verifyProof", () => {
+        it("Should not verify a Semaphore proof if the tree depth is not supported", async () => {
+            const fun = () => verifyProof({ ...proof, depth: 40 })
 
-    //         await expect(fun).rejects.toThrow("tree depth must be")
-    //     })
+            await expect(fun).rejects.toThrow()
+        })
 
-    //     it("Should verify a Semaphore proof", async () => {
-    //         const response = await verifyProof(proof)
+        it("Should verify a Semaphore proof", async () => {
+            const response = await verifyProof(proof)
 
-    //         expect(response).toBe(true)
-    //     })
-    // })
+            expect(response).toBe(true)
+        })
+    })
 })
