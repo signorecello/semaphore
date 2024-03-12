@@ -12,15 +12,11 @@ fn compute_merkle_root<N>(leaf: Field, indices: Field, hash_path: [Field; N]) ->
     let index_bits = indices.to_be_bits(n as u32);
     let mut current = leaf;
     for i in 0..hash_path.len() {
-        // if the path bit is 0, we are on the left
-        // so we hash with the hash_path as (current, hash_path[i])
-        // otherwise we hash with the hash_path as (hash_path[i], current)
         let pair : [Field; 2] = if (index_bits[i] == 0) {
             [current, hash_path[i]]
         } else {
             [hash_path[i], current]
         };
-        // we only hash if there is any sibling, otherwise we just promote it
         if (hash_path[i] != 0) {
             current = Poseidon2::hash(pair, pair.len());
         };

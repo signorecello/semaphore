@@ -37,6 +37,17 @@ describe("Proof", () => {
             expect(typeof proof).toBe("object")
         }, 50000)
 
+        it("Should generate a Semaphore proof of size 12", async () => {
+            const halfPlusOne = Array.from({ length: 2049 }, (_, i) => BigInt(i))
+            console.log(halfPlusOne)
+
+            const group = await Group.new([identity!.commitment, ...halfPlusOne])
+
+            proof = await generateProof(identity!, group, 12)
+
+            expect(typeof proof).toBe("object")
+        }, 50000)
+
         it("Should generate a Semaphore proof passing a Merkle proof instead of a group", async () => {
             const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
 

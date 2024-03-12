@@ -24,7 +24,7 @@
     },
     "scripts": {
         "build": "rimraf dist && rollup -c rollup.config.ts --configPlugin typescript",
-        "compile": "sh generate_circuits.sh"
+        "compile": "sh generate_circuits.sh ${0}"
     },
     "publishConfig": {
         "access": "public"
