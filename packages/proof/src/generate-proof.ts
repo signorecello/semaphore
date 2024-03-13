@@ -23,6 +23,7 @@ import { NoirSemaphore } from "@semaphore-protocol/circuits"
  * @returns The Semaphore proof ready to be verified.
  */
 export default async function generateProof(
+    semaphore: NoirSemaphore,
     identity: Identity,
     groupOrMerkleProof: Group | MerkleProof,
     merkleTreeDepth: number
@@ -54,9 +55,8 @@ export default async function generateProof(
         merkleProof = groupOrMerkleProof.generateMerkleProof(leafIndex)
     }
 
-    const noirSemaphore = await NoirSemaphore.new(merkleTreeDepth, { threads: 8 })
     const secret = `0x${BigInt(identity.secretScalar).toString(16)}`
-    const nullifier = `0x${noirSemaphore.poseidon([secret]).toString(16)}`
+    const nullifier = `0x${semaphore.poseidon([secret]).toString(16)}`
     const root = `0x${BigInt(merkleProof.root).toString(16)}`
 
     let indices: string = "0b"
@@ -77,8 +77,7 @@ export default async function generateProof(
         root
     }
 
-    const proof = await noirSemaphore.prove(input)
-    await noirSemaphore.destroy()
+    const proof = await semaphore.prove(input)
 
     return {
         proof,

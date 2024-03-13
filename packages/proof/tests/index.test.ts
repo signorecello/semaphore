@@ -1,9 +1,10 @@
 import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { SemaphoreProof, generateProof, verifyProof } from "../src"
+import { NoirSemaphore } from "@semaphore-protocol/circuits"
 
 describe("Proof", () => {
-    const treeDepth = 10
+    let treeDepth = 10
 
     let identity: Identity | null = null
     let proof: SemaphoreProof
@@ -13,48 +14,86 @@ describe("Proof", () => {
     })
 
     describe("# generateProof", () => {
-        it("Should not generate a Semaphore proof if the tree depth is not supported", async () => {
-            const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
+        describe("Should not generate a Semaphore proof with invalid tree depth", () => {
+            let noirSemaphore: NoirSemaphore | null = null
 
-            const fun = () => generateProof(identity!, group, 13)
+            beforeAll(async () => {
+                treeDepth = 13
+                noirSemaphore = await NoirSemaphore.new(treeDepth)
+            })
 
-            await expect(fun).rejects.toThrow("tree depth must be")
+            afterAll(async () => {
+                await noirSemaphore!.destroy()
+            })
+
+            it("Should not generate a Semaphore proof if the tree depth is not supported", async () => {
+                const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
+
+                const fun = () => generateProof(noirSemaphore!, identity!, group, treeDepth)
+
+                await expect(fun).rejects.toThrow("tree depth must be")
+            })
         })
 
-        it("Should not generate Semaphore proofs if the identity is not part of the group", async () => {
-            const group = await Group.new([BigInt(1), BigInt(2)])
+        describe("Should generate a Semaphore proof", () => {
+            let noirSemaphore: NoirSemaphore | null = null
 
-            const fun = () => generateProof(identity!, group, treeDepth)
+            beforeAll(async () => {
+                treeDepth = 10
+                noirSemaphore = await NoirSemaphore.new(treeDepth)
+            })
 
-            await expect(fun).rejects.toThrow("does not exist")
+            afterAll(async () => {
+                await noirSemaphore!.destroy()
+            })
+
+            it("Should not generate Semaphore proofs if the identity is not part of the group", async () => {
+                const group = await Group.new([BigInt(1), BigInt(2)])
+
+                const fun = () => generateProof(noirSemaphore!, identity!, group, treeDepth)
+
+                await expect(fun).rejects.toThrow("does not exist")
+            })
+
+            it("Should generate a Semaphore proof", async () => {
+                const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
+
+                proof = await generateProof(noirSemaphore!, identity!, group, treeDepth)
+
+                expect(typeof proof).toBe("object")
+            }, 8000)
+
+            it("Should generate a Semaphore proof passing a Merkle proof instead of a group", async () => {
+                const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
+
+                proof = await generateProof(noirSemaphore!, identity!, group.generateMerkleProof(2), treeDepth)
+
+                expect(typeof proof).toBe("object")
+            }, 8000)
         })
+        describe("Should generate a Semaphore proof of depth 12", () => {
+            let noirSemaphore: NoirSemaphore | null = null
 
-        it("Should generate a Semaphore proof", async () => {
-            const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
+            beforeAll(async () => {
+                treeDepth = 12
+                noirSemaphore = await NoirSemaphore.new(treeDepth)
+            })
 
-            proof = await generateProof(identity!, group, treeDepth)
+            afterAll(async () => {
+                await noirSemaphore!.destroy()
+            })
 
-            expect(typeof proof).toBe("object")
-        }, 50000)
+            it("Should generate a Semaphore proof of depth 12", async () => {
+                const halfPlusOne = Array.from({ length: 2049 }, (_, i) => BigInt(i))
+                console.log(halfPlusOne)
 
-        it("Should generate a Semaphore proof of size 12", async () => {
-            const halfPlusOne = Array.from({ length: 2049 }, (_, i) => BigInt(i))
-            console.log(halfPlusOne)
+                const group = await Group.new([identity!.commitment, ...halfPlusOne])
 
-            const group = await Group.new([identity!.commitment, ...halfPlusOne])
+                proof = await generateProof(noirSemaphore!, identity!, group, treeDepth)
 
-            proof = await generateProof(identity!, group, 12)
-
-            expect(typeof proof).toBe("object")
-        }, 50000)
-
-        it("Should generate a Semaphore proof passing a Merkle proof instead of a group", async () => {
-            const group = await Group.new([BigInt(1), BigInt(2), identity!.commitment])
-
-            proof = await generateProof(identity!, group.generateMerkleProof(2), treeDepth)
-
-            expect(typeof proof).toBe("object")
-        }, 50000)
+                expect(typeof proof).toBe("object")
+            }, 8000)
+        })
     })
 
     describe("# verifyProof", () => {
@@ -68,6 +107,6 @@ describe("Proof", () => {
             const response = await verifyProof(proof)
 
             expect(response).toBe(true)
-        })
+        }, 8000)
     })
 })

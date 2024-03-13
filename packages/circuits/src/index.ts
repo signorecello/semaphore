@@ -4,6 +4,7 @@ import { readFile } from "fs/promises"
 import { join } from "path"
 import { InputMap, Noir } from "@noir-lang/noir_js"
 import { requireNumber } from "@semaphore-protocol/utils/errors"
+import { cpus } from "os"
 
 export async function loadCircuit(treeDepth: number) {
     requireNumber(treeDepth, "treeDepth")
@@ -18,24 +19,19 @@ export function toEvenHex(str: string) {
 }
 
 export class NoirSemaphore {
-    noir?: Noir
-    bb: BarretenbergSync
+    constructor(private bb: BarretenbergSync, private noir?: Noir) {}
 
-    constructor(bb: BarretenbergSync, compiled?: CompiledCircuit, private options?: BackendOptions) {
-        if (compiled) {
-            const backend = new BarretenbergBackend(compiled, options)
-            this.noir = new Noir(compiled, backend)
-        }
-        this.bb = bb
-    }
-
-    static async new(treeDepth?: number, options?: BackendOptions) {
+    static async new(treeDepth?: number) {
         const bb = await BarretenbergSync.new()
         if (!treeDepth) {
             return new NoirSemaphore(bb)
         }
         const compiled = await loadCircuit(treeDepth)
-        return new NoirSemaphore(bb, compiled, options)
+        const backend = new BarretenbergBackend(compiled, { threads: cpus().length })
+        await backend.instantiate()
+        const noir = new Noir(compiled, backend)
+        await noir.init()
+        return new NoirSemaphore(bb, noir)
     }
 
     async destroy() {
