@@ -23,8 +23,8 @@
         "url": "https://github.com/semaphore-protocol/semaphore.git/issues"
     },
     "scripts": {
-        "build": "rimraf dist && rollup -c rollup.config.ts --configPlugin typescript",
-        "compile": "sh generate_circuits.sh ${0}"
+        "build": "rimraf dist && yarn compile && rollup -c rollup.config.ts --configPlugin typescript",
+        "compile": "node scripts/compile.js ${0:-12}"
     },
     "publishConfig": {
         "access": "public"
