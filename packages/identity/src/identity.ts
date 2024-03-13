@@ -1,7 +1,7 @@
 import type { Point } from "@zk-kit/baby-jubjub"
 import { Signature, derivePublicKey, deriveSecretScalar, signMessage, verifySignature } from "@zk-kit/eddsa-poseidon"
 import type { BigNumberish } from "@zk-kit/utils"
-import { poseidon2 } from "poseidon-lite/poseidon2"
+import { NoirSemaphore } from "@semaphore-protocol/circuits"
 import { randomNumber } from "./random-number.node"
 
 /**
@@ -22,6 +22,7 @@ export default class Identity {
     private _publicKey: Point<string>
     // The identity commitment used as a public value in Semaphore groups.
     private _commitment: string
+    private _noir: NoirSemaphore
 
     /**
      * Initializes the class attributes based on a given private key.
@@ -38,11 +39,18 @@ export default class Identity {
      *
      * @param privateKey The private key used to derive the public key.
      */
-    constructor(privateKey: BigNumberish = randomNumber().toString()) {
+    private constructor(noir: NoirSemaphore, privateKey: BigNumberish) {
         this._privateKey = privateKey
         this._secretScalar = deriveSecretScalar(privateKey)
         this._publicKey = derivePublicKey(privateKey)
-        this._commitment = poseidon2(this._publicKey).toString()
+        this._noir = noir
+        const publicKey = this._publicKey.map((i) => BigInt(i).toString(16))
+        this._commitment = this._noir.poseidon(publicKey).toString()
+    }
+
+    static async new(privateKey: BigNumberish = randomNumber().toString()) {
+        const bb = await NoirSemaphore.new()
+        return new Identity(bb, privateKey)
     }
 
     /**

@@ -1,12 +1,7 @@
 import type { Group, MerkleProof } from "@semaphore-protocol/group"
 import type { Identity } from "@semaphore-protocol/identity"
-import { requireDefined, requireNumber, requireObject, requireTypes } from "@semaphore-protocol/utils/errors"
-import { NumericString, groth16 } from "snarkjs"
-import { packGroth16Proof } from "@zk-kit/utils"
-import getSnarkArtifacts from "./get-snark-artifacts.node"
-import hash from "./hash"
-import toBigInt from "./to-bigint"
-import { BigNumberish, SemaphoreProof, SnarkArtifacts } from "./types"
+import { requireDefined, requireNumber, requireObject } from "@semaphore-protocol/utils/errors"
+import { NoirSemaphore } from "@semaphore-protocol/circuits"
 
 /**
  * It generates a Semaphore proof, i.e. a zero-knowledge proof that an identity that
@@ -25,39 +20,29 @@ import { BigNumberish, SemaphoreProof, SnarkArtifacts } from "./types"
  * @param scope The Semaphore scope.
  * @param message The Semaphore message.
  * @param merkleTreeDepth The depth of the tree with which the circuit was compiled.
- * @param snarkArtifacts The SNARK artifacts.
  * @returns The Semaphore proof ready to be verified.
  */
 export default async function generateProof(
+    semaphore: NoirSemaphore,
     identity: Identity,
     groupOrMerkleProof: Group | MerkleProof,
-    message: BigNumberish | Uint8Array | string,
-    scope: BigNumberish | Uint8Array | string,
-    merkleTreeDepth?: number,
-    snarkArtifacts?: SnarkArtifacts
-): Promise<SemaphoreProof> {
+    merkleTreeDepth: number
+) {
     requireDefined(identity, "identity")
     requireDefined(groupOrMerkleProof, "groupOrMerkleProof")
-    requireDefined(message, "message")
-    requireDefined(scope, "scope")
 
     requireObject(identity, "identity")
     requireObject(groupOrMerkleProof, "groupOrMerkleProof")
-    requireTypes(message, "message", ["string", "bigint", "number", "uint8array"])
-    requireTypes(scope, "scope", ["string", "bigint", "number", "uint8array"])
 
     if (merkleTreeDepth) {
         requireNumber(merkleTreeDepth, "merkleTreeDepth")
     }
 
-    if (snarkArtifacts) {
-        requireObject(snarkArtifacts, "snarkArtifacts")
+    if (merkleTreeDepth !== undefined) {
+        if (merkleTreeDepth < 1 || merkleTreeDepth > 12) {
+            throw new TypeError("The tree depth must be a number between 1 and 12")
+        }
     }
-
-    // Message and scope can be strings, numbers or buffers (i.e. Uint8Array).
-    // They will be converted to bigints anyway.
-    message = toBigInt(message)
-    scope = toBigInt(scope)
 
     let merkleProof
 
@@ -70,53 +55,34 @@ export default async function generateProof(
         merkleProof = groupOrMerkleProof.generateMerkleProof(leafIndex)
     }
 
-    const merkleProofLength = merkleProof.siblings.length
+    const secret = `0x${BigInt(identity.secretScalar).toString(16)}`
+    const nullifier = `0x${semaphore.poseidon([secret]).toString(16)}`
+    const root = `0x${BigInt(merkleProof.root).toString(16)}`
 
-    if (merkleTreeDepth !== undefined) {
-        if (merkleTreeDepth < 1 || merkleTreeDepth > 12) {
-            throw new TypeError("The tree depth must be a number between 1 and 12")
-        }
-    } else {
-        merkleTreeDepth = merkleProofLength
-    }
-
-    // If the Snark artifacts are not defined they will be automatically downloaded.
-    if (!snarkArtifacts) {
-        snarkArtifacts = await getSnarkArtifacts(merkleTreeDepth)
-    }
-
-    // The index must be converted to a list of indices, 1 for each tree level.
-    // The missing siblings can be set to 0, as they won't be used in the circuit.
-    const merkleProofIndices = []
-    const merkleProofSiblings = merkleProof.siblings
-
+    let indices: string = "0b"
+    const hashPath = merkleProof.siblings
     for (let i = 0; i < merkleTreeDepth; i += 1) {
-        merkleProofIndices.push((merkleProof.index >> i) & 1)
+        indices = indices.concat(((merkleProof.index >> i) & 1).toString())
 
-        if (merkleProofSiblings[i] === undefined) {
-            merkleProofSiblings[i] = "0"
+        if (hashPath[i] === undefined) {
+            hashPath[i] = "0"
         }
     }
 
-    const { proof, publicSignals } = await groth16.fullProve(
-        {
-            secret: identity.secretScalar,
-            merkleProofLength,
-            merkleProofIndices,
-            merkleProofSiblings,
-            scope: hash(scope),
-            message: hash(message)
-        },
-        snarkArtifacts.wasmFilePath,
-        snarkArtifacts.zkeyFilePath
-    )
+    const input = {
+        secret,
+        hash_path: hashPath.map((x) => `0x${BigInt(x).toString(16)}`),
+        indices: `0x${BigInt(indices).toString(16)}`,
+        nullifier,
+        root
+    }
+
+    const proof = await semaphore.prove(input)
 
     return {
-        merkleTreeDepth,
-        merkleTreeRoot: publicSignals[0],
-        nullifier: publicSignals[1],
-        message: message.toString() as NumericString,
-        scope: scope.toString() as NumericString,
-        points: packGroth16Proof(proof)
+        proof,
+        nullifier,
+        root,
+        depth: merkleTreeDepth
     }
 }

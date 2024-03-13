@@ -24,7 +24,7 @@ export default class HeyAuthn {
         const registrationOptions = generateRegistrationOptions(options)
         const { id } = await startRegistration(registrationOptions)
 
-        const identity = new Identity(id)
+        const identity = await Identity.new(id)
 
         return new HeyAuthn(identity)
     }
@@ -39,7 +39,7 @@ export default class HeyAuthn {
         const authenticationOptions = generateAuthenticationOptions(options)
         const { id } = await startAuthentication(authenticationOptions)
 
-        const identity = new Identity(id)
+        const identity = await Identity.new(id)
 
         return new HeyAuthn(identity)
     }

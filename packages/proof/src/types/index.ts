@@ -1,4 +1,5 @@
 import type { NumericString } from "snarkjs"
+import { ProofData } from "@noir-lang/noir_js"
 
 export type BigNumberish = string | number | bigint
 
@@ -8,12 +9,10 @@ export type SnarkArtifacts = {
 }
 
 export type SemaphoreProof = {
-    merkleTreeDepth: number
-    merkleTreeRoot: NumericString
-    message: NumericString
-    nullifier: NumericString
-    scope: NumericString
-    points: PackedPoints
+    proof: ProofData
+    nullifier: string
+    root: string
+    depth: number
 }
 
 export type PackedPoints = [

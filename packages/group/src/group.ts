@@ -1,5 +1,5 @@
 import { LeanIMT } from "@zk-kit/imt"
-import { poseidon2 } from "poseidon-lite/poseidon2"
+import { NoirSemaphore } from "@semaphore-protocol/circuits"
 import { BigNumberish, MerkleProof } from "./types"
 
 /**
@@ -22,8 +22,15 @@ export default class Group {
      * them one by one with the `addMember` function.
      * @param members A list of identity commitments.
      */
-    constructor(members: BigNumberish[] = []) {
-        this.leanIMT = new LeanIMT((a, b) => poseidon2([a, b]), members.map(BigInt))
+    private constructor(bb: NoirSemaphore, members: BigNumberish[] = []) {
+        const hasher = (a: bigint, b: bigint) => bb.poseidon([BigInt(a).toString(16), BigInt(b).toString(16)])
+        this.leanIMT = new LeanIMT(hasher, members.map(BigInt))
+    }
+
+    static async new(members: BigNumberish[] = []) {
+        const bb = await NoirSemaphore.new()
+        const group = new Group(bb, members)
+        return group
     }
 
     /**
@@ -133,8 +140,8 @@ export default class Group {
      * @param nodes The stringified JSON of the group.
      * @returns The {@link Group} instance.
      */
-    static import(exportedGroup: string): Group {
-        const group = new Group()
+    static async import(exportedGroup: string): Promise<Group> {
+        const group = await Group.new()
 
         group.leanIMT.import(exportedGroup)
 

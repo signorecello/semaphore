@@ -1,3 +1,4 @@
-ptau
-main
-test
+circuits/target
+circuits/proofs
+compiled_circuits
+temp

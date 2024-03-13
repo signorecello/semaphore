@@ -32,7 +32,7 @@ jest.mock("@simplewebauthn/browser", () => ({
 describe("HeyAuthn", () => {
     describe("# getIdentity", () => {
         it("Should get the identity of the HeyAuthn instance", async () => {
-            const expectedIdentity = new Identity()
+            const expectedIdentity = await Identity.new()
             const heyAuthn = new HeyAuthn(expectedIdentity)
             const identity = heyAuthn.getIdentity()
 
@@ -50,7 +50,7 @@ describe("HeyAuthn", () => {
 
         it("Should create an identity identical to the one created registering credential", async () => {
             const { identity } = await HeyAuthn.fromRegister(options)
-            const expectedIdentity = new Identity("my-new-credential")
+            const expectedIdentity = await Identity.new("my-new-credential")
 
             expect(identity.secretScalar).toEqual(expectedIdentity.secretScalar)
             expect(identity.commitment).toEqual(expectedIdentity.commitment)
@@ -64,7 +64,7 @@ describe("HeyAuthn", () => {
 
         it("Should create an identity identical to the one created authenticating credential", async () => {
             const { identity } = await HeyAuthn.fromAuthenticate(options)
-            const expectedIdentity = new Identity("my-existing-credential")
+            const expectedIdentity = await Identity.new("my-existing-credential")
 
             expect(identity.secretScalar).toEqual(expectedIdentity.secretScalar)
             expect(identity.commitment).toEqual(expectedIdentity.commitment)
