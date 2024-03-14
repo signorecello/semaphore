@@ -4,7 +4,7 @@ import { getCurveFromName } from "ffjavascript"
 import { SemaphoreProof, generateProof, verifyProof } from "../src"
 
 describe("Proof", () => {
-    const treeDepth = 10
+    let treeDepth = 10
 
     const message = "Hello world"
     const scope = "Scope"
@@ -40,7 +40,8 @@ describe("Proof", () => {
         // })
 
         it("Should generate a Semaphore proof", async () => {
-            const group = new Group([identity.commitment], 32, BigInt(0))
+            treeDepth = 8
+            const group = new Group([identity.commitment], treeDepth, BigInt(0))
 
             proof = await generateProof(identity, group, message, scope, treeDepth)
 

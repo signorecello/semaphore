@@ -73,9 +73,9 @@ export default async function generateProof(
     const merkleProofLength = merkleProof.siblings.length
 
     if (merkleTreeDepth !== undefined) {
-        if (merkleTreeDepth < 1 || merkleTreeDepth > 12) {
-            throw new TypeError("The tree depth must be a number between 1 and 12")
-        }
+        // if (merkleTreeDepth < 1 || merkleTreeDepth > 12) {
+        //     throw new TypeError("The tree depth must be a number between 1 and 12")
+        // }
     } else {
         merkleTreeDepth = merkleProofLength
     }

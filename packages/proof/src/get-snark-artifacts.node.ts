@@ -55,7 +55,7 @@ export default async function getSnarkArtifacts(treeDepth: number): Promise<Snar
     // }
 
     return {
-        wasmFilePath: resolve(join(__dirname, "./semaphore.wasm")),
-        zkeyFilePath: resolve(join(__dirname, "./semaphore.zkey"))
+        wasmFilePath: resolve(join(__dirname, `./semaphore-${treeDepth}.wasm`)),
+        zkeyFilePath: resolve(join(__dirname, `./semaphore-${treeDepth}_final.zkey`))
     }
 }
