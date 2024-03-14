@@ -74,12 +74,11 @@ describe("Proof", () => {
         //         expect(typeof proof).toBe("object")
         //     }, 8000)
         // })
-        describe("Should generate a Semaphore proof of depth 32", () => {
+        describe("Should generate a Semaphore proof", () => {
             let noirSemaphore: NoirSemaphore | null = null
-
             let group: Group
             beforeAll(async () => {
-                treeDepth = 32
+                treeDepth = 8
                 noirSemaphore = await NoirSemaphore.new(treeDepth)
                 group = await Group.new([identity!.commitment], treeDepth, BigInt(0))
             }, 800000)

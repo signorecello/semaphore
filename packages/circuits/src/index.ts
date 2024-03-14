@@ -19,7 +19,7 @@ export function toEvenHex(num: bigint) {
 }
 
 export class NoirSemaphore {
-    constructor(private bb: BarretenbergSync, private noir?: Noir) {}
+    constructor(private bb: BarretenbergSync, private backend?: BarretenbergBackend, private noir?: Noir) {}
 
     static async new(treeDepth?: number) {
         const bb = await BarretenbergSync.new()
@@ -31,7 +31,7 @@ export class NoirSemaphore {
         await backend.instantiate()
         const noir = new Noir(compiled, backend)
         await noir.init()
-        return new NoirSemaphore(bb, noir)
+        return new NoirSemaphore(bb, backend, noir)
     }
 
     async destroy() {
@@ -42,7 +42,17 @@ export class NoirSemaphore {
 
     async prove(inputs: InputMap) {
         if (!this.noir) throw new Error("No prover exists")
-        const proof = await this.noir.generateProof(inputs)
+
+        let a1 = Date.now()
+        const { witness } = await this.noir.execute(inputs)
+        let a2 = Date.now()
+        console.log("Execution time: ", a2 - a1)
+
+        a1 = Date.now()
+        const proof = await this.backend!.generateProof(witness)
+        a2 = Date.now()
+        console.log("Proof generation time: ", a2 - a1)
+
         return proof
     }
 
