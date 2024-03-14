@@ -1,4 +1,7 @@
 {
     "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "downlevelIteration": true
+    },
     "include": ["src", "tests", "rollup.node.config.ts", "rollup.browser.config.ts"]
 }

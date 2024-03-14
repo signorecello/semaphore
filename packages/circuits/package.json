@@ -30,9 +30,7 @@
         "access": "public"
     },
     "devDependencies": {
-        "@aztec/bb.js": "^0.26.6",
-        "@noir-lang/backend_barretenberg": "0.24.0-f988d02.nightly",
-        "@noir-lang/noir_js": "0.24.0-f988d02.nightly",
+        "@aztec/bb.js": "^0.27.2",
         "rimraf": "^5.0.5",
         "rollup": "^4.9.6",
         "rollup-plugin-cleanup": "^3.2.1",

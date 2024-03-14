@@ -9,12 +9,12 @@ import { cpus } from "os"
 export async function loadCircuit(treeDepth: number) {
     requireNumber(treeDepth, "treeDepth")
     const data = await readFile(join(__dirname, `../compiled_circuits/depth_${treeDepth}.json`), "utf-8")
-    const compiled = JSON.parse(data) as CompiledCircuit
-    return compiled
+    const compiled = JSON.parse(data)
+    return compiled.program
 }
 
-export function toEvenHex(str: string) {
-    const trimmed = str.replace("0x", "")
+export function toEvenHex(num: bigint) {
+    const trimmed = num.toString(16)
     return trimmed.length % 2 === 0 ? `0x${trimmed}` : `0x0${trimmed}`
 }
 
@@ -27,7 +27,7 @@ export class NoirSemaphore {
             return new NoirSemaphore(bb)
         }
         const compiled = await loadCircuit(treeDepth)
-        const backend = new BarretenbergBackend(compiled, { threads: cpus().length })
+        const backend = new BarretenbergBackend(compiled as CompiledCircuit, { threads: cpus().length })
         await backend.instantiate()
         const noir = new Noir(compiled, backend)
         await noir.init()
@@ -52,8 +52,14 @@ export class NoirSemaphore {
         return verified
     }
 
-    poseidon(inputs: string[]) {
-        const inputsFr = inputs.map((i) => Fr.fromString(toEvenHex(i)))
-        return BigInt(this.bb.poseidonHash(inputsFr).toString())
+    poseidon(inputs: bigint[]) {
+        console.log(inputs)
+        const inputsFr = inputs.map((i) => new Fr(i % Fr.MODULUS))
+        const ret = BigInt(this.bb.poseidonHash(inputsFr).toString())
+        return ret
+    }
+
+    test() {
+        return this.bb.testThreads(1, 1)
     }
 }

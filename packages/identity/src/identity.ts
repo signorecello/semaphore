@@ -21,7 +21,7 @@ export default class Identity {
     // The EdDSA public key, derived from the private key.
     private _publicKey: Point<string>
     // The identity commitment used as a public value in Semaphore groups.
-    private _commitment: string
+    private _commitment: bigint
     private _noir: NoirSemaphore
 
     /**
@@ -44,8 +44,8 @@ export default class Identity {
         this._secretScalar = deriveSecretScalar(privateKey)
         this._publicKey = derivePublicKey(privateKey)
         this._noir = noir
-        const publicKey = this._publicKey.map((i) => BigInt(i).toString(16))
-        this._commitment = this._noir.poseidon(publicKey).toString()
+        const publicKey = this._publicKey.map((i) => BigInt(i))
+        this._commitment = this._noir.poseidon(publicKey)
     }
 
     static async new(privateKey: BigNumberish = randomNumber().toString()) {
@@ -81,7 +81,7 @@ export default class Identity {
      * Returns the commitment hash of the public key.
      * @returns The commitment as a string.
      */
-    public get commitment(): string {
+    public get commitment(): bigint {
         return this._commitment
     }
 

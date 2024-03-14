@@ -1,4 +1,4 @@
-import { LeanIMT } from "@zk-kit/imt"
+import { IMT } from "@zk-kit/imt"
 import { NoirSemaphore } from "@semaphore-protocol/circuits"
 import { BigNumberish, MerkleProof } from "./types"
 
@@ -14,7 +14,7 @@ import { BigNumberish, MerkleProof } from "./types"
  */
 export default class Group {
     // The {@link https://zkkit.pse.dev/classes/_zk_kit_imt.LeanIMT.html | LeanIMT} instance.
-    public leanIMT: LeanIMT
+    public imt: IMT
 
     /**
      * Creates a new instance of the Group. Optionally, a list of identity commitments can
@@ -22,14 +22,14 @@ export default class Group {
      * them one by one with the `addMember` function.
      * @param members A list of identity commitments.
      */
-    private constructor(bb: NoirSemaphore, members: BigNumberish[] = []) {
-        const hasher = (a: bigint, b: bigint) => bb.poseidon([BigInt(a).toString(16), BigInt(b).toString(16)])
-        this.leanIMT = new LeanIMT(hasher, members.map(BigInt))
+    private constructor(bb: NoirSemaphore, members: BigNumberish[], depth: number, zeroValue = BigInt(0)) {
+        const hasher = (values: bigint[]) => bb.poseidon(values.map(BigInt))
+        this.imt = new IMT(hasher, depth, zeroValue, 2, members.map(BigInt))
     }
 
-    static async new(members: BigNumberish[] = []) {
+    static async new(members: BigNumberish[], depth: number, zeroValue = BigInt(0)) {
         const bb = await NoirSemaphore.new()
-        const group = new Group(bb, members)
+        const group = new Group(bb, members, depth, zeroValue)
         return group
     }
 
@@ -38,7 +38,7 @@ export default class Group {
      * @returns The root hash as a string.
      */
     public get root(): string {
-        return this.leanIMT.root ? this.leanIMT.root.toString() : "0"
+        return this.imt.root ? this.imt.root.toString() : "0"
     }
 
     /**
@@ -46,7 +46,7 @@ export default class Group {
      * @returns The tree depth as a number.
      */
     public get depth(): number {
-        return this.leanIMT.depth
+        return this.imt.depth
     }
 
     /**
@@ -54,7 +54,7 @@ export default class Group {
      * @returns The tree size as a number.
      */
     public get size(): number {
-        return this.leanIMT.size
+        return this.imt.leaves.length
     }
 
     /**
@@ -62,7 +62,7 @@ export default class Group {
      * @returns The list of members of the group.
      */
     public get members(): string[] {
-        return this.leanIMT.leaves.map(String)
+        return this.imt.leaves.map(String)
     }
 
     /**
@@ -71,7 +71,7 @@ export default class Group {
      * @returns The index of the member, or -1 if it does not exist.
      */
     public indexOf(member: BigNumberish): number {
-        return this.leanIMT.indexOf(BigInt(member))
+        return this.imt.indexOf(BigInt(member))
     }
 
     /**
@@ -79,7 +79,7 @@ export default class Group {
      * @param member The new member to be added.
      */
     public addMember(member: BigNumberish) {
-        this.leanIMT.insert(BigInt(member))
+        this.imt.insert(BigInt(member))
     }
 
     /**
@@ -87,7 +87,7 @@ export default class Group {
      * @param members New members.
      */
     public addMembers(members: BigNumberish[]) {
-        this.leanIMT.insertMany(members.map(BigInt))
+        members.map((m) => this.imt.insert(BigInt(m)))
     }
 
     /**
@@ -96,7 +96,8 @@ export default class Group {
      * @param member New member value.
      */
     public updateMember(index: number, member: BigNumberish) {
-        this.leanIMT.update(index, BigInt(member))
+        console.log("updating", index, member)
+        this.imt.update(index, BigInt(member))
     }
 
     /**
@@ -104,7 +105,7 @@ export default class Group {
      * @param index The index of the member to be removed.
      */
     public removeMember(index: number) {
-        this.leanIMT.update(index, BigInt(0))
+        this.imt.update(index, BigInt(0))
     }
 
     /**
@@ -113,38 +114,14 @@ export default class Group {
      * @returns The {@link MerkleProof} object.
      */
     public generateMerkleProof(_index: number): MerkleProof {
-        const { index, leaf, root, siblings } = this.leanIMT.generateProof(_index)
+        const { pathIndices, leafIndex, leaf, root, siblings } = this.imt.createProof(_index)
 
         return {
-            index,
+            leafIndex,
+            pathIndices,
             leaf: leaf.toString(),
             root: root.toString(),
             siblings: siblings.map(String)
         }
-    }
-
-    /**
-     * Enables the conversion of the group into a JSON string that
-     * can be re-used for future imports. This approach is beneficial for
-     * large groups, as it avoids re-calculating the tree hashes.
-     * @returns The stringified JSON of the group.
-     */
-    public export(): string {
-        return this.leanIMT.export()
-    }
-
-    /**
-     * Imports an entire group by initializing the tree without calculating
-     * any hashes. Note that it is crucial to ensure the integrity of the
-     * exported group.
-     * @param nodes The stringified JSON of the group.
-     * @returns The {@link Group} instance.
-     */
-    static async import(exportedGroup: string): Promise<Group> {
-        const group = await Group.new()
-
-        group.leanIMT.import(exportedGroup)
-
-        return group
     }
 }
