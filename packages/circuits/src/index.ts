@@ -63,7 +63,6 @@ export class NoirSemaphore {
     }
 
     poseidon(inputs: bigint[]) {
-        console.log(inputs)
         const inputsFr = inputs.map((i) => new Fr(i % Fr.MODULUS))
         const ret = BigInt(this.bb.poseidonHash(inputsFr).toString())
         return ret

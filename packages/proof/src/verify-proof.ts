@@ -8,13 +8,12 @@ import { SemaphoreProof } from "./types"
  * @param proof The Semaphore proof.
  * @returns True if the proof is valid, false otherwise.
  */
-export default async function verifyProof({ proof, nullifier, root, depth }: SemaphoreProof): Promise<boolean> {
+export default async function verifyProof({ proof, root, depth }: SemaphoreProof): Promise<boolean> {
     requireDefined(proof, "proof")
     requireObject(proof, "proof")
-    requireString(nullifier, "nullifier")
     requireString(root, "root")
 
     const noirSemaphore = await NoirSemaphore.new(depth)
-    const verified = await noirSemaphore.verify({ proof: proof.proof, publicInputs: [nullifier, root] })
+    const verified = await noirSemaphore.verify({ proof: proof.proof, publicInputs: [root] })
     return verified
 }

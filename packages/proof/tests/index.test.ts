@@ -1,10 +1,10 @@
 import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { NoirSemaphore } from "@semaphore-protocol/circuits"
-import { Worker } from "worker_threads"
-import os from "os"
-import path, { join } from "path"
-import { SemaphoreProof, generateProof, verifyProof } from "../src"
+// import { Worker } from "worker_threads"
+// import os from "os"
+// import path, { join } from "path"
+import { SemaphoreProof, generateProof } from "../src"
 
 describe("Proof", () => {
     let treeDepth = 10

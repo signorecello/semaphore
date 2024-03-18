@@ -55,12 +55,12 @@ export default async function generateProof(
         merkleProof = groupOrMerkleProof.generateMerkleProof(leafIndex)
     }
 
-    const secret = BigInt(identity.secretScalar)
-    const nullifier = `0x${semaphore.poseidon([secret]).toString(16)}`
+    // const secret = BigInt(identity.secretScalar)
+    // const nullifier = `0x${semaphore.poseidon([secret]).toString(16)}`
     const root = `0x${BigInt(merkleProof.root).toString(16)}`
 
     const hashPath = merkleProof.siblings
-    console.log(merkleProof.pathIndices)
+    // console.log(merkleProof.pathIndices)
     const indices: string = `0b${merkleProof.pathIndices.join("")}`
     // for (let i = 0; i < merkleTreeDepth; i += 1) {
     //     indices = indices.concat(((merkleProof.index >> i) & 1).toString())
@@ -71,12 +71,14 @@ export default async function generateProof(
     // }
 
     const input = {
-        secret: `0x${secret.toString(16)}`,
+        // secret: `0x${secret.toString(16)}`,
+        identity: `0x${identity.commitment.toString(16)}`,
         hash_path: hashPath.map((x) => toEvenHex(BigInt(x))),
         indices: `0x${BigInt(indices).toString(16)}`,
-        nullifier,
+        // nullifier,
         root
     }
+    console.log(identity.commitment)
 
     console.log(input)
 
@@ -84,7 +86,7 @@ export default async function generateProof(
 
     return {
         proof,
-        nullifier,
+        // nullifier,
         root,
         depth: merkleTreeDepth
     }
