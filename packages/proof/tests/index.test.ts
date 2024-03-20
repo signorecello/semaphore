@@ -78,7 +78,7 @@ describe("Proof", () => {
             let noirSemaphore: NoirSemaphore | null = null
             let group: Group
             beforeAll(async () => {
-                treeDepth = 8
+                treeDepth = 32
                 noirSemaphore = await NoirSemaphore.new(treeDepth)
                 group = await Group.new([identity!.commitment], treeDepth, BigInt(0))
             }, 800000)

@@ -2,6 +2,7 @@ import type { Point } from "@zk-kit/baby-jubjub"
 import { Signature, derivePublicKey, deriveSecretScalar, signMessage, verifySignature } from "@zk-kit/eddsa-poseidon"
 import type { BigNumberish } from "@zk-kit/utils"
 import { NoirSemaphore } from "@semaphore-protocol/circuits"
+import { poseidon2 } from "poseidon-lite/poseidon2"
 import { randomNumber } from "./random-number.node"
 
 /**
@@ -45,7 +46,7 @@ export default class Identity {
         this._publicKey = derivePublicKey(privateKey)
         this._noir = noir
         const publicKey = this._publicKey.map((i) => BigInt(i))
-        this._commitment = this._noir.poseidon(publicKey)
+        this._commitment = poseidon2(publicKey)
     }
 
     static async new(privateKey: BigNumberish = randomNumber().toString()) {

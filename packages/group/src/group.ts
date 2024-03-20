@@ -1,5 +1,6 @@
 import { IMT } from "@zk-kit/imt"
 import { NoirSemaphore } from "@semaphore-protocol/circuits"
+import { poseidon2 } from "poseidon-lite/poseidon2"
 import { BigNumberish, MerkleProof } from "./types"
 
 /**
@@ -23,7 +24,7 @@ export default class Group {
      * @param members A list of identity commitments.
      */
     private constructor(bb: NoirSemaphore, members: BigNumberish[], depth: number, zeroValue = BigInt(0)) {
-        const hasher = (values: bigint[]) => bb.poseidon(values.map(BigInt))
+        const hasher = (values: bigint[]) => poseidon2(values.map(BigInt))
         this.imt = new IMT(hasher, depth, zeroValue, 2, members.map(BigInt))
     }
 
