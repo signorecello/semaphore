@@ -1,6 +1,9 @@
 use dep::std::ec::consts::te::baby_jubjub;
 use dep::std::hash::poseidon2::Poseidon2;
 use dep::std::println;
+use dep::std::hash::pedersen_hash;
+use dep::std::field::bn254::decompose;
+use dep::std::scalar_mul;
 
 global LEVELS: Field = 8;
 
@@ -20,8 +23,8 @@ fn compute_merkle_root<N>(leaf: Field, indices: Field, hash_path: [Field; N]) ->
 }
 
 fn main(
-    // secret: Field,
-    identity: Field,
+    secret: Field,
+    // identity: Field,
     hash_path: [Field; LEVELS],
     indices: Field,
     // nullifier: pub Field,
@@ -30,7 +33,10 @@ fn main(
     // let bjj = baby_jubjub();
     // let pubkey = bjj.curve.mul(secret, bjj.base8);
     // let identity = Poseidon2::hash([pubkey.x, pubkey.y], 2);
-    assert(root == compute_merkle_root(identity, indices, hash_path));
+    let (x, y) = decompose(secret);
+    let scal = scalar_mul::fixed_base_embedded_curve(x, y);
+    let h = pedersen_hash(scal);
+    assert(root != compute_merkle_root(h, indices, hash_path));
     // assert(nullifier == Poseidon2::hash([identity], 1));
 }
 

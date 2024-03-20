@@ -55,7 +55,7 @@ export default async function generateProof(
         merkleProof = groupOrMerkleProof.generateMerkleProof(leafIndex)
     }
 
-    // const secret = BigInt(identity.secretScalar)
+    const secret = "0x42"
     // const nullifier = `0x${semaphore.poseidon([secret]).toString(16)}`
     const root = `0x${BigInt(merkleProof.root).toString(16)}`
 
@@ -71,8 +71,8 @@ export default async function generateProof(
     // }
 
     const input = {
-        // secret: `0x${secret.toString(16)}`,
-        identity: `0x${identity.commitment.toString(16)}`,
+        secret,
+        // identity: `0x${identity.commitment.toString(16)}`,
         hash_path: hashPath.map((x) => toEvenHex(BigInt(x))),
         indices: `0x${BigInt(indices).toString(16)}`,
         // nullifier,
