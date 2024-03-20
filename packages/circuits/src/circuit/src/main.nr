@@ -1,5 +1,5 @@
 use dep::std::ec::consts::te::baby_jubjub;
-use dep::std::hash::poseidon2::Poseidon2;
+use dep::std::hash::poseidon::bn254;
 use dep::std::println;
 
 global LEVELS: Field = 8;
@@ -14,7 +14,7 @@ fn compute_merkle_root<N>(leaf: Field, indices: Field, hash_path: [Field; N]) ->
         } else {
             [hash_path[i], current]
         };
-        current = Poseidon2::hash(pair, pair.len());
+        current = bn254::hash_2(pair);
     }
     current
 }
@@ -34,8 +34,8 @@ fn main(
     // assert(nullifier == Poseidon2::hash([identity], 1));
 }
 
-#[test]
-fn test() {
-    let t = Poseidon2::hash([1, 2], 2);
-    println(t);
-}
+// #[test]
+// fn test() {
+//     let t = bn254::hash_2(pair);
+//     println(t);
+// }
